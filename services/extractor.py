@@ -8,7 +8,7 @@ def data_parser(f):
 		try:
 			operation = json_data['operation']
 			data = json_data['data']
-			return f(data, operation).encode('utf-8')
+			return str(f(data, operation))
 		except KeyError:
 			raise KeyError('Invalid input data. Usage: {"operation": ..., "data": ...}')
 	return wrapper

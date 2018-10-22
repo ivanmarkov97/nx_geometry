@@ -1,3 +1,3 @@
 def printer(data):
 	print(data)
-	return data
+	return data.encode('utf-8')
