@@ -8,26 +8,32 @@ change to dict
 """
 
 class Storage:
-	def __init__(self, host="localhost", port=6379, db=0):
-		self.redis_db = redis.StrictRedis(host=host, port=port, db=db)
+	redis_db = redis.StrictRedis(host="localhost", port=6379, db=0)
 
-	def add(self, obj):
+	@classmethod
+	def add(cls, obj):
 		enc_obj = json_encode(obj)
-		self.redis_db.set(obj.uid, enc_obj)
+		cls.redis_db.set(obj.uid, enc_obj)
 
-	def remove(self, obj):
+	@classmethod
+	def remove(cls, obj):
 		pass
 
-	def remove_by_uid(self, obj):
+	@classmethod
+	def remove_by_uid(cls, obj):
 		pass
 
-	def get_by_uid(self, uid) -> str:
-		data = self.export_json(uid)
+	@classmethod
+	def get_by_uid(cls, uid) -> str:
+		data = cls.export_json(uid)
 		return json_decode(data)
 
-	def export_json(self, uid) -> str:
-		data = self.redis_db.get(uid)
+	@classmethod
+	def export_json(cls, uid) -> str:
+		data = cls.redis_db.get(uid)
 		data = data.decode('utf8').replace("'", '"')
 		return json.loads(data)
 
-storage = Storage()
+	@classmethod
+	def export_all_data(cls):
+		return str([{key: cls.redis_db.hgetall(key)} for key in cls.redis_db.keys()])

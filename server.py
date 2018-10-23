@@ -1,4 +1,5 @@
 from operators.handler import handle_data
+from storage import Storage
 import websockets
 import asyncio
 
@@ -17,11 +18,14 @@ if __name__ == '__main__':
 """
 
 async def hello(websocket, path):
+	await websocket.send(Storage.export_all_data())
 	while True:
 	    data = await websocket.recv()
 	    data = handle_data(data)
-	    await websocket.send(data)
+	    #await websocket.send(data)
+	    await websocket.send(Storage.export_all_data())
 
+Storage.redis_db.flushall()
 start_server = websockets.serve(hello, 'localhost', 65432)
 asyncio.get_event_loop().run_until_complete(start_server)
 asyncio.get_event_loop().run_forever()

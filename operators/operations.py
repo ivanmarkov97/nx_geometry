@@ -1,5 +1,6 @@
 from services.validators import ValidatorManager, PointValidator, LineValidator
 from operators.nx_math import Xc
+from storage import Storage
 
 def printer(data):
 	print(data)
@@ -19,6 +20,10 @@ class CreateManager:
 
 			Xc[x_key] = params['point']['x']
 			Xc[y_key] = params['point']['y']
+
+			store_point = {'x': params['point']['x'], 'y': params['point']['y']}
+			Storage.redis_db.hmset(params['uid'], store_point)
+
 			print(Xc)
 			return Xc
 		else:
@@ -43,9 +48,26 @@ class CreateManager:
 				Xc[y1_key] = params['point1']['y']
 				Xc[x2_key] = params['point2']['x']
 				Xc[y2_key] = params['point2']['y']
+
+
+				store_line = {
+					'point1': {
+						'uid': params['point1']['uid'],
+						'x': params['point1']['x'], 
+						'y': params['point1']['y']
+					},
+					'point2': {
+						'uid': params['point2']['uid'],
+						'x': params['point2']['x'],
+						'y': params['point2']['y']
+					}
+				}
+
+				Storage.redis_db.hmset(params['uid'], store_line)
+
 			except KeyError:
 				raise KeyError('Usage line: {"uid":..., "point1":{"x", "y"}, "point2":{"x", "y"}')
-	
+
 			return Xc
 		else:
 			raise ValueError('Usage line: {"uid":..., "point1":{"uid", "x", "y"}, "point2":{"uid", "x", "y"}')
