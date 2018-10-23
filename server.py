@@ -20,10 +20,13 @@ if __name__ == '__main__':
 async def hello(websocket, path):
 	await websocket.send(Storage.export_all_data())
 	while True:
-	    data = await websocket.recv()
-	    data = handle_data(data)
-	    #await websocket.send(data)
-	    await websocket.send(Storage.export_all_data())
+		try:
+		    data = await websocket.recv()
+		    data = handle_data(data)
+		    #await websocket.send(data)
+		    await websocket.send(Storage.export_all_data())
+		except websockets.exceptions.ConnectionClosed:
+			Storage.redis_db.flushall()
 
 Storage.redis_db.flushall()
 start_server = websockets.serve(hello, 'localhost', 65432)
