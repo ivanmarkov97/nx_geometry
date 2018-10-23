@@ -35,5 +35,8 @@ class Storage:
 		return json.loads(data)
 
 	@classmethod
-	def export_all_data(cls):	
-		return str([{key.decode('utf-8'): cls.redis_db.get(key).decode('utf-8')} for key in cls.redis_db.keys()])
+	def export_all_data(cls):
+		dataStr = str([{key: cls.redis_db.get(key)} for key in cls.redis_db.keys()])
+		dataStr = dataStr.replace("b'", '"').replace("'", '"')
+		dataStr = dataStr.replace('"{', '{').replace('}"', '}')
+		return dataStr
