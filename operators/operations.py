@@ -1,6 +1,7 @@
 from services.validators import ValidatorManager, PointValidator, LineValidator
 from operators.nx_math import Xc
 from storage import Storage
+import json
 
 def printer(data):
 	print(data)
@@ -22,7 +23,8 @@ class CreateManager:
 			Xc[y_key] = params['point']['y']
 
 			store_point = {'x': params['point']['x'], 'y': params['point']['y']}
-			Storage.redis_db.hmset(params['uid'], store_point)
+			json_store_point = json.dumps(store_point)
+			Storage.redis_db.set(params['uid'], json_store_point)
 
 			print(Xc)
 			return Xc
@@ -63,7 +65,8 @@ class CreateManager:
 					}
 				}
 
-				Storage.redis_db.hmset(params['uid'], store_line)
+				json_store_line = json.dumps(store_line)
+				Storage.redis_db.set(params['uid'], json_store_line)
 
 			except KeyError:
 				raise KeyError('Usage line: {"uid":..., "point1":{"x", "y"}, "point2":{"x", "y"}')
