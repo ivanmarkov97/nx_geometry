@@ -63,6 +63,7 @@ def distTwoPoint(l, id1, id2):
     print('',Eq, sep='\n')
     for var in m:
         Eq[var] += diff(Equal, X[var])
+
 # ...
 def eqTwoPoint(id1, id2):
     n = len(X)
@@ -192,7 +193,9 @@ def parTwoLines(id1, id2, id3, id4):
     k += 1
     l1 = ((X[m[2]] - X[m[0]])**2 + (X[m[3]] - X[m[1]])**2)**0.5
     l2 = ((X[m[6]] - X[m[4]])**2 + (X[m[7]] - X[m[5]])**2)**0.5
-    Equal = X[m[8]]*((X[m[2]]-X[m[0]])*(X[m[7]] - X[m[5]]) - (X[m[6]] - X[m[4]])*(X[m[3]] - X[m[1]]))#X[m[8]]*(((X[m[2]] - X[m[0]])*(X[m[6]] - X[m[4]]) + (X[m[3]] - X[m[1]])*(X[m[7]] - X[m[5]])) / l1 / l2 - 1) 
+    Equal = X[m[8]]*((X[m[2]]-X[m[0]])*(X[m[7]] - X[m[5]]) -\
+     (X[m[6]] - X[m[4]])*(X[m[3]] - X[m[1]]))
+     #X[m[8]]*(((X[m[2]] - X[m[0]])*(X[m[6]] - X[m[4]]) + (X[m[3]] - X[m[1]])*(X[m[7]] - X[m[5]])) / l1 / l2 - 1) 
     localdF0 = {
         m[0] : X[m[0]] - Xc[m[0]],
         m[2] : X[m[2]] - Xc[m[2]],
@@ -246,7 +249,8 @@ def angleTwoLines(angle, id1, id2, id3, id4):
     # l2 = expand(l2)
     print(l1)
     print(l2)
-    Equal = X[m[8]]*(((X[m[2]] - X[m[0]])*(X[m[6]] - X[m[4]]) + (X[m[3]] - X[m[1]])*(X[m[7]] - X[m[5]])) / (l1 * l2) - cos(angle / 180 * pi))
+    Equal = X[m[8]]*(((X[m[2]] - X[m[0]])*(X[m[6]] - X[m[4]]) + \
+        (X[m[3]] - X[m[1]])*(X[m[7]] - X[m[5]])) / (l1 * l2) - cos(angle / 180 * pi))
     # Equal = simplify(Equal)
     localdF0 = {
         m[0] : X[m[0]] - Xc[m[0]],
@@ -361,7 +365,7 @@ hor('a','c')
 distTwoPoint(2,'a','b')
 angleTwoLines(45,'a','b','c','b')
 
-
+"""
 print('',*Eq.items(),sep="\n")
 print(Xc)
 print("EQ.values")
@@ -373,4 +377,4 @@ print(Xc)
 res = nsolve(list(Eq.values()), list(X.values()), [Xc[i] for i in X.keys()])
 print(res)
 print({item: res.values()[pos] for pos, item in enumerate([*X.values()])})
-
+"""

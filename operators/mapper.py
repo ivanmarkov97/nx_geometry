@@ -1,4 +1,4 @@
-from .operations import printer
+from .operations import printer, CreateManager
 from .nx_math import (distTwoPoint,
 					  eqTwoPoint,
 					  perpTwoLines,
@@ -8,8 +8,8 @@ from .nx_math import (distTwoPoint,
 					  ver)
 
 mapped_operations = [
-	('create_point', None),
-	('create_line', None),
+	('create_point', CreateManager.create_point),
+	('create_line', CreateManager.create_line),
 
 	('drag_point', None),
 	('drag_line', None),
