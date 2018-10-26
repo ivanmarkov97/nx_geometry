@@ -1,6 +1,8 @@
 from services.validators import ValidatorManager, PointValidator, LineValidator
+from operators.nx_math import ver, hor
 from operators.nx_math import Xc
 from storage import Storage
+from copy import copy
 import json
 
 def printer(data):
@@ -51,7 +53,6 @@ class CreateManager:
 				Xc[x2_key] = params['point2']['x']
 				Xc[y2_key] = params['point2']['y']
 
-
 				store_line = {
 					'point1': {
 						'uid': params['point1']['uid'],
@@ -74,3 +75,60 @@ class CreateManager:
 			return Xc
 		else:
 			raise ValueError('Usage line: {"uid":..., "point1":{"uid", "x", "y"}, "point2":{"uid", "x", "y"}')
+
+
+class RestrictionManager:
+	@classmethod
+	def vertical_strict(cls, data):
+		print(data)
+		id1 = data['point1']['uid']
+		id2 = data['point2']['uid']
+		solv_result = ver(id1, id2)
+
+		try:
+			store_line = {
+				'point1': {
+					'uid': data['point1']['uid'],
+					'x': float(solv_result['x_'+data['point1']['uid']]), 
+					'y': float(solv_result['y_'+data['point1']['uid']])
+				},
+				'point2': {
+					'uid': data['point2']['uid'],
+					'x': float(solv_result['x_'+data['point2']['uid']]), 
+					'y': float(solv_result['y_'+data['point2']['uid']])
+				}
+			}
+
+			json_store_line = json.dumps(store_line)
+			Storage.redis_db.set(data['uid'], json_store_line)
+
+		except KeyError:
+				raise KeyError('Usage line: {"uid":..., "point1":{"x", "y"}, "point2":{"x", "y"}')
+
+
+	@classmethod
+	def horizontal_strict(cls, data):
+		print(data)
+		id1 = data['point1']['uid']
+		id2 = data['point2']['uid']
+		solv_result = hor(id1, id2)
+
+		try:
+			store_line = {
+				'point1': {
+					'uid': data['point1']['uid'],
+					'x': float(solv_result['x_'+data['point1']['uid']]), 
+					'y': float(solv_result['y_'+data['point1']['uid']])
+				},
+				'point2': {
+					'uid': data['point2']['uid'],
+					'x': float(solv_result['x_'+data['point2']['uid']]), 
+					'y': float(solv_result['y_'+data['point2']['uid']])
+				}
+			}
+
+			json_store_line = json.dumps(store_line)
+			Storage.redis_db.set(data['uid'], json_store_line)
+
+		except KeyError:
+				raise KeyError('Usage line: {"uid":..., "point1":{"x", "y"}, "point2":{"x", "y"}')

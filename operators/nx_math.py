@@ -19,7 +19,7 @@ X = {}
 
 # current X
 # to do storage
-Xc = {'xa':2,'ya':2,'xb':3,'yb':4,'xc':5,'yc':1,'xd':2,'yd':5,'xe':4,'ye':5,'xj':3,'yj':6}
+Xc = {'x_a':2,'y_a':2,'x_b':3,'y_b':4,'x_c':5,'y_c':1,'x_d':2,'y_d':5,'x_e':4,'y_e':5,'x_j':3,'y_j':6}
 uid = 0
 
 # l - lenght (float64), id1 (point.uid)
@@ -281,11 +281,11 @@ def hor(id1, id2):
     s = []
     for i in [id1, id2]:
         for j in ['x', 'y']:
-            m.append(j+i)
-            if Symbol(j + i) in X.values():
+            m.append(j+"_"+i)
+            if Symbol(j + "_" + i) in X.values():
                 continue
-            s.append(j+i)
-            X[j+i] = (Symbol(j + i))
+            s.append(j+"_"+i)
+            X[j+"_"+i] = (Symbol(j +"_"+ i))
             k += 1
     global uid
 
@@ -315,8 +315,14 @@ def hor(id1, id2):
     for var in m:
         Eq[var] += diff(Equal, X[var])
 
+    res = nsolve(list(Eq.values()), list(X.values()), [Xc[i] for i in X.keys()])
+    print(res)
+    print({item: res.values()[pos] for pos, item in enumerate([*X.values()])})
+    return {str(item): res.values()[pos] for pos, item in enumerate([*X.values()])}
+
 # ...
 def ver(id1, id2):
+
     n = len(X)
     k = 0
     # Массив имен переменных для данного ограничения
@@ -325,11 +331,11 @@ def ver(id1, id2):
     s = []
     for i in [id1, id2]:
         for j in ['x', 'y']:
-            m.append(j+i)
-            if Symbol(j + i) in X.values():
+            m.append(j+"_"+i)
+            if Symbol(j + "_" +i) in X.values():
                 continue
-            s.append(j+i)
-            X[j+i] = (Symbol(j + i))
+            s.append(j+"_"+i)
+            X[j+"_"+i] = (Symbol(j + "_" +i))
             k += 1
     global uid
 
@@ -341,6 +347,7 @@ def ver(id1, id2):
     s.append('ld' + str(uid))
     print('m = ',m)
     print('s = ',s)
+    print('X = ', X)
 
     k += 1
     Equal = X[m[4]]*(X[m[0]] - X[m[2]])
@@ -351,6 +358,8 @@ def ver(id1, id2):
         m[3] : X[m[3]] - Xc[m[3]],
         m[4] : 0
     }
+
+    print("LOCALF0")
     print('\n',*localdF0.items(),sep='\n')
     for var in s:
         Eq[var] = localdF0[var]
@@ -359,11 +368,16 @@ def ver(id1, id2):
     for var in m:
         Eq[var] += diff(Equal, X[var])
 
-ver('a','b')
-hor('a','c')
+    res = nsolve(list(Eq.values()), list(X.values()), [Xc[i] for i in X.keys()])
+    print(res)
+    print({item: res.values()[pos] for pos, item in enumerate([*X.values()])})
+    return {str(item): res.values()[pos] for pos, item in enumerate([*X.values()])}
 
-distTwoPoint(2,'a','b')
-angleTwoLines(45,'a','b','c','b')
+#ver('a','b')
+#hor('a','c')
+
+#distTwoPoint(2,'a','b')
+#angleTwoLines(45,'a','b','c','b')
 
 """
 print('',*Eq.items(),sep="\n")

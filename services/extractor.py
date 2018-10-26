@@ -5,6 +5,8 @@ def data_parser(f):
 	@wraps(f)
 	def wrapper(*args, **kwargs):
 		json_data = json.loads(args[0])
+		print("JSON DATA")
+		print(json_data)
 		try:
 			operation = json_data['operation']
 			data = json_data['data']

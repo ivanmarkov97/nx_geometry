@@ -1,4 +1,4 @@
-from .operations import printer, CreateManager
+from .operations import printer, CreateManager, RestrictionManager
 from .nx_math import (distTwoPoint,
 					  eqTwoPoint,
 					  perpTwoLines,
@@ -14,8 +14,8 @@ mapped_operations = [
 	('drag_point', None),
 	('drag_line', None),
 
-	('horizontal', hor),
-	('vertical', ver),
+	('horizontal', RestrictionManager.horizontal_strict),
+	('vertical', RestrictionManager.vertical_strict),
 	('parallel', parTwoLines),
 	('perpendicular', perpTwoLines),
 
