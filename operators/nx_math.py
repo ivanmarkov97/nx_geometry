@@ -74,11 +74,11 @@ def eqTwoPoint(id1, id2):
     s = []
     for i in [id1, id2]:
         for j in ['x', 'y']:
-            m.append(j+i)
-            if Symbol(j + i) in X.values():
+            m.append(j+"_"+i)
+            if Symbol(j +"_"+ i) in X.values():
                 continue
-            s.append(j+i)
-            X[j+i] = (Symbol(j + i))
+            s.append(j+"_"+i)
+            X[j+"_"+i] = (Symbol(j +"_"+ i))
             k += 1
     global uid
     uid += 1
@@ -114,6 +114,15 @@ def eqTwoPoint(id1, id2):
     for var in m:
         Eq[var] += diff(Equal1, X[var])
         Eq[var] += diff(Equal2, X[var])
+
+    res = nsolve(list(Eq.values()), list(X.values()), [Xc[i] for i in X.keys()])
+    print("########RESUUUULT#######")
+    print(res)
+    print(res.values())
+    print([*X.values()])
+    print(list(zip(res.values(), [*X.values()])))
+    print({item: res.values()[pos] for pos, item in enumerate([*X.values()]) if pos < len(res.values())})
+    return {str(item): res.values()[pos] for pos, item in enumerate([*X.values()]) if pos < len(res.values())}
 
 # id1 point1.uid...
 def perpTwoLines(id1, id2, id3, id4):

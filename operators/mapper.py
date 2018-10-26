@@ -19,9 +19,9 @@ mapped_operations = [
 	('parallel', RestrictionManager.lines_parallel),
 	('perpendicular', RestrictionManager.lines_perpendicular),
 
-	('connect_points', eqTwoPoint), 
+	('connect_points', RestrictionManager.connect_points), 
 
-	('attache_point_to_line', None),
+	('attach_point_to_line', RestrictionManager.attach_point_to_line),
 	('angle_between_lines', None),
 	
 	('dist_between_points', distTwoPoint),
