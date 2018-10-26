@@ -178,11 +178,11 @@ def parTwoLines(id1, id2, id3, id4):
     s = []
     for i in [id1, id2, id3, id4]:
         for j in ['x', 'y']:
-            m.append(j+i)
-            if Symbol(j + i) in X.values():
+            m.append(j+"_"+i)
+            if Symbol(j + "_"+i) in X.values():
                 continue
-            s.append(j+i)
-            X[j+i] = (Symbol(j + i))
+            s.append(j+"_"+i)
+            X[j+"_"+i] = (Symbol(j +"_"+ i))
             k += 1
     global uid
 
@@ -219,6 +219,11 @@ def parTwoLines(id1, id2, id3, id4):
     print('',Eq, sep='\n')
     for var in m:
         Eq[var] += diff(Equal, X[var])
+
+    res = nsolve(list(Eq.values()), list(X.values()), [Xc[i] for i in X.keys()])
+    print(res)
+    print({item: res.values()[pos] for pos, item in enumerate([*X.values()])})
+    return {str(item): res.values()[pos] for pos, item in enumerate([*X.values()])}
 
 # ...
 def angleTwoLines(angle, id1, id2, id3, id4):

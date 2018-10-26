@@ -16,7 +16,7 @@ mapped_operations = [
 
 	('horizontal', RestrictionManager.horizontal_strict),
 	('vertical', RestrictionManager.vertical_strict),
-	('parallel', parTwoLines),
+	('parallel', RestrictionManager.lines_parallel),
 	('perpendicular', RestrictionManager.lines_perpendicular),
 
 	('connect_points', eqTwoPoint), 

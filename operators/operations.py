@@ -1,5 +1,5 @@
 from services.validators import ValidatorManager, PointValidator, LineValidator
-from operators.nx_math import ver, hor, perpTwoLines
+from operators.nx_math import ver, hor, perpTwoLines, parTwoLines
 from operators.nx_math import Xc
 from storage import Storage
 from copy import copy
@@ -154,6 +154,61 @@ class RestrictionManager:
 		line2_id2 = line2['point2']['uid']
 
 		solv_result = perpTwoLines(line1_id1, line1_id2, line2_id1, line2_id2)
+		print(solv_result)
+
+		try:
+			store_line1 = {
+				'point1': {
+					'uid': line1['point1']['uid'],
+					'x': float(solv_result['x_'+line1['point1']['uid']]), 
+					'y': float(solv_result['y_'+line1['point1']['uid']])
+				},
+				'point2': {
+					'uid': line1['point2']['uid'],
+					'x': float(solv_result['x_'+line1['point2']['uid']]), 
+					'y': float(solv_result['y_'+line1['point2']['uid']])
+				}
+			}
+
+			json_store_line1 = json.dumps(store_line1)
+			Storage.redis_db.set(data['uid1'], json_store_line1)
+
+			store_line2 = {
+				'point1': {
+					'uid': line2['point1']['uid'],
+					'x': float(solv_result['x_'+line2['point1']['uid']]), 
+					'y': float(solv_result['y_'+line2['point1']['uid']])
+				},
+				'point2': {
+					'uid': line2['point2']['uid'],
+					'x': float(solv_result['x_'+line2['point2']['uid']]), 
+					'y': float(solv_result['y_'+line2['point2']['uid']])
+				}
+			}
+
+			json_store_line2 = json.dumps(store_line2)
+			Storage.redis_db.set(data['uid2'], json_store_line2)
+
+		except KeyError:
+				raise KeyError('Usage data: {"uid1":..., "uid2":...}')
+
+
+	@classmethod
+	def lines_parallel(cls, data):
+		print("LINES PARALLEL")
+		print(data)
+		line1 = Storage.redis_db.get(data['uid1'])
+		line1 = json.loads(line1)
+
+		line2 = Storage.redis_db.get(data['uid2'])
+		line2 = json.loads(line2)
+
+		line1_id1 = line1['point1']['uid']
+		line1_id2 = line1['point2']['uid']
+		line2_id1 = line2['point1']['uid']
+		line2_id2 = line2['point2']['uid']
+
+		solv_result = parTwoLines(line1_id1, line1_id2, line2_id1, line2_id2)
 		print(solv_result)
 
 		try:
