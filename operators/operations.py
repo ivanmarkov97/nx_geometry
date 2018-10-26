@@ -81,21 +81,24 @@ class RestrictionManager:
 	@classmethod
 	def vertical_strict(cls, data):
 		print(data)
-		id1 = data['point1']['uid']
-		id2 = data['point2']['uid']
+		line = Storage.redis_db.get(data['uid'])
+		line = json.loads(line)
+
+		id1 = line['point1']['uid']
+		id2 = line['point2']['uid']
 		solv_result = ver(id1, id2)
 
 		try:
 			store_line = {
 				'point1': {
-					'uid': data['point1']['uid'],
-					'x': float(solv_result['x_'+data['point1']['uid']]), 
-					'y': float(solv_result['y_'+data['point1']['uid']])
+					'uid': line['point1']['uid'],
+					'x': float(solv_result['x_'+line['point1']['uid']]), 
+					'y': float(solv_result['y_'+line['point1']['uid']])
 				},
 				'point2': {
-					'uid': data['point2']['uid'],
-					'x': float(solv_result['x_'+data['point2']['uid']]), 
-					'y': float(solv_result['y_'+data['point2']['uid']])
+					'uid': line['point2']['uid'],
+					'x': float(solv_result['x_'+line['point2']['uid']]), 
+					'y': float(solv_result['y_'+line['point2']['uid']])
 				}
 			}
 
@@ -103,27 +106,30 @@ class RestrictionManager:
 			Storage.redis_db.set(data['uid'], json_store_line)
 
 		except KeyError:
-				raise KeyError('Usage line: {"uid":..., "point1":{"x", "y"}, "point2":{"x", "y"}')
+				raise KeyError('Usage data: {"uid":...}')
 
 
 	@classmethod
 	def horizontal_strict(cls, data):
 		print(data)
-		id1 = data['point1']['uid']
-		id2 = data['point2']['uid']
+		line = Storage.redis_db.get(data['uid'])
+		line = json.loads(line)
+
+		id1 = line['point1']['uid']
+		id2 = line['point2']['uid']
 		solv_result = hor(id1, id2)
 
 		try:
 			store_line = {
 				'point1': {
-					'uid': data['point1']['uid'],
-					'x': float(solv_result['x_'+data['point1']['uid']]), 
-					'y': float(solv_result['y_'+data['point1']['uid']])
+					'uid': line['point1']['uid'],
+					'x': float(solv_result['x_'+line['point1']['uid']]), 
+					'y': float(solv_result['y_'+line['point1']['uid']])
 				},
 				'point2': {
-					'uid': data['point2']['uid'],
-					'x': float(solv_result['x_'+data['point2']['uid']]), 
-					'y': float(solv_result['y_'+data['point2']['uid']])
+					'uid': line['point2']['uid'],
+					'x': float(solv_result['x_'+line['point2']['uid']]), 
+					'y': float(solv_result['y_'+line['point2']['uid']])
 				}
 			}
 
@@ -131,4 +137,4 @@ class RestrictionManager:
 			Storage.redis_db.set(data['uid'], json_store_line)
 
 		except KeyError:
-				raise KeyError('Usage line: {"uid":..., "point1":{"x", "y"}, "point2":{"x", "y"}')
+				raise KeyError('Usage data: {"uid":...}')
