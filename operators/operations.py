@@ -1,5 +1,5 @@
 from services.validators import ValidatorManager, PointValidator, LineValidator
-from services.extractor import stored_line
+from services.extractor import stored_single_line, stored_two_lines, stored_line_restriction
 from operators.nx_math import Xc
 #from operators.nx_math import ver, hor, perpTwoLines, parTwoLines, eqTwoPoint
 from operators import nx_math
@@ -17,9 +17,6 @@ class CreateManager:
 	def create_point(cls, params):
 		validator = PointValidator(params)
 		if ValidatorManager.is_valid(validator):
-			print("create point Operation")
-			print(params)
-
 			x_key = 'x_{}'.format(params['uid'])
 			y_key = 'y_{}'.format(params['uid'])
 
@@ -38,9 +35,6 @@ class CreateManager:
 	def create_line(cls, params):
 		validator = LineValidator(params)
 		if ValidatorManager.is_valid(validator):
-			print("create_line Operation")
-			print(params)
-
 			try:
 				x1_key = 'x_{}'.format(params['point1']['uid'])
 				y1_key = 'y_{}'.format(params['point1']['uid'])
@@ -78,138 +72,34 @@ class CreateManager:
 
 class RestrictionManager:
 	@classmethod
-	@stored_line
-	def vertical_strict(cls, line_uid, point1_uid, point2_uid):
-		solv_result = nx_math.ver(point1_uid, point2_uid)
-		restrictions = Storage.get_restiction_for_object(line_uid)
-		if restrictions is not None:
-			restrictions[line_uid].append({'name': nx_math.ver.__name__, 'args': [point1_uid, point2_uid]})
-		else:
-			restrictions = {line_uid: [{'name': nx_math.ver.__name__, 'args': [point1_uid, point2_uid]}]}
-		Storage.set_restrictions(restrictions)
-		return solv_result
+	@stored_line_restriction
+	@stored_single_line
+	def vertical_strict(cls, line_uid, *points):
+		print("vertical_strict")
+		solv_result = nx_math.ver(*points)
+		return {'data': solv_result, 'restriction': nx_math.ver.__name__}
 
 
 	@classmethod
-	@stored_line
-	def horizontal_strict(cls, line_uid, point1_uid, point2_uid):
-		solv_result = nx_math.hor(point1_uid, point2_uid)
-		restrictions = Storage.get_restiction_for_object(line_uid)
-		if restrictions is not None:
-			restrictions[line_uid].append({'name': nx_math.hor.__name__, 'args': [point1_uid, point2_uid]})
-		else:
-			restrictions = {line_uid: [{'name': nx_math.hor.__name__, 'args': [point1_uid, point2_uid]}]}
-		Storage.set_restrictions(restrictions)
-		return solv_result
+	@stored_line_restriction
+	@stored_single_line
+	def horizontal_strict(cls, line_uid, *points):
+		solv_result = nx_math.hor(*points)
+		return {'data': solv_result, 'restriction': nx_math.hor.__name__}
 
 
 	@classmethod
-	def lines_perpendicular(cls, data):
-		print(data)
-		line1 = Storage.redis_db.get(data['uid1'])
-		line1 = json.loads(line1)
-
-		line2 = Storage.redis_db.get(data['uid2'])
-		line2 = json.loads(line2)
-
-		line1_id1 = line1['point1']['uid']
-		line1_id2 = line1['point2']['uid']
-		line2_id1 = line2['point1']['uid']
-		line2_id2 = line2['point2']['uid']
-
-		solv_result = nx_math.perpTwoLines(line1_id1, line1_id2, line2_id1, line2_id2)
-		print(solv_result)
-
-		try:
-			store_line1 = {
-				'point1': {
-					'uid': line1['point1']['uid'],
-					'x': float(solv_result['x_'+line1['point1']['uid']]), 
-					'y': float(solv_result['y_'+line1['point1']['uid']])
-				},
-				'point2': {
-					'uid': line1['point2']['uid'],
-					'x': float(solv_result['x_'+line1['point2']['uid']]), 
-					'y': float(solv_result['y_'+line1['point2']['uid']])
-				}
-			}
-
-			json_store_line1 = json.dumps(store_line1)
-			Storage.redis_db.set(data['uid1'], json_store_line1)
-
-			store_line2 = {
-				'point1': {
-					'uid': line2['point1']['uid'],
-					'x': float(solv_result['x_'+line2['point1']['uid']]), 
-					'y': float(solv_result['y_'+line2['point1']['uid']])
-				},
-				'point2': {
-					'uid': line2['point2']['uid'],
-					'x': float(solv_result['x_'+line2['point2']['uid']]), 
-					'y': float(solv_result['y_'+line2['point2']['uid']])
-				}
-			}
-
-			json_store_line2 = json.dumps(store_line2)
-			Storage.redis_db.set(data['uid2'], json_store_line2)
-
-		except KeyError:
-				raise KeyError('Usage data: {"uid1":..., "uid2":...}')
+	@stored_two_lines
+	def lines_perpendicular(cls, line1_uid, line2_uid, *points):
+		solv_result = nx_math.perpTwoLines(*points)
+		return {'data': solv_result, 'restriction': nx_math.perpTwoLines.__name__}
 
 
 	@classmethod
-	def lines_parallel(cls, data):
-		print("LINES PARALLEL")
-		print(data)
-		line1 = Storage.redis_db.get(data['uid1'])
-		line1 = json.loads(line1)
-
-		line2 = Storage.redis_db.get(data['uid2'])
-		line2 = json.loads(line2)
-
-		line1_id1 = line1['point1']['uid']
-		line1_id2 = line1['point2']['uid']
-		line2_id1 = line2['point1']['uid']
-		line2_id2 = line2['point2']['uid']
-
-		solv_result = nx_math.parTwoLines(line1_id1, line1_id2, line2_id1, line2_id2)
-		print(solv_result)
-
-		try:
-			store_line1 = {
-				'point1': {
-					'uid': line1['point1']['uid'],
-					'x': float(solv_result['x_'+line1['point1']['uid']]), 
-					'y': float(solv_result['y_'+line1['point1']['uid']])
-				},
-				'point2': {
-					'uid': line1['point2']['uid'],
-					'x': float(solv_result['x_'+line1['point2']['uid']]), 
-					'y': float(solv_result['y_'+line1['point2']['uid']])
-				}
-			}
-
-			json_store_line1 = json.dumps(store_line1)
-			Storage.redis_db.set(data['uid1'], json_store_line1)
-
-			store_line2 = {
-				'point1': {
-					'uid': line2['point1']['uid'],
-					'x': float(solv_result['x_'+line2['point1']['uid']]), 
-					'y': float(solv_result['y_'+line2['point1']['uid']])
-				},
-				'point2': {
-					'uid': line2['point2']['uid'],
-					'x': float(solv_result['x_'+line2['point2']['uid']]), 
-					'y': float(solv_result['y_'+line2['point2']['uid']])
-				}
-			}
-
-			json_store_line2 = json.dumps(store_line2)
-			Storage.redis_db.set(data['uid2'], json_store_line2)
-
-		except KeyError:
-				raise KeyError('Usage data: {"uid1":..., "uid2":...}')
+	@stored_two_lines
+	def lines_parallel(cls, line1_uid, line2_uid, *points):
+		solv_result = nx_math.parTwoLines(*points)
+		return {'data': solv_result, 'restriction': nx_math.parTwoLines.__name__}
 
 
 	@classmethod

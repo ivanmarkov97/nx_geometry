@@ -62,7 +62,7 @@ class Storage:
 
 	@classmethod
 	def export_all_data(cls):
-		dataStr = str([{key: cls.redis_db.get(key)} for key in cls.redis_db.keys()])
-		dataStr = dataStr.replace("b'", '"').replace("'", '"')
-		dataStr = dataStr.replace('"{', '{').replace('}"', '}')
-		return dataStr
+		data_str = str([{key: cls.redis_db.get(key)} for key in cls.redis_db.keys() if key != "restrictions"])
+		data_str = data_str.replace("b'", '"').replace("'", '"')
+		data_str = data_str.replace('"{', '{').replace('}"', '}')
+		return data_str
