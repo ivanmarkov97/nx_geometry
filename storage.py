@@ -2,11 +2,6 @@ from services.coders import json_encode, json_decode
 import redis
 import json
 
-
-"""
-change to dict
-"""
-
 class Storage:
 	redis_db = redis.StrictRedis(host="localhost", port=6379, db=0, decode_responses=True)
 
@@ -43,14 +38,10 @@ class Storage:
 	def get_restiction_for_object(cls, uid):
 		restictions = cls.redis_db.get("restictions")
 		if restictions is not None:
-			print("restictions NOT NONE")
 			restictions = json.loads(restictions)
 			if uid in restictions.keys():
-				print("if")
 				return restictions[uid]
-			print("ELSE")
 			return {}
-		print("REDIS NOEN")
 		return None
 
 	@classmethod

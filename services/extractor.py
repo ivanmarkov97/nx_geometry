@@ -89,20 +89,22 @@ def stored_two_lines(f):
 		line2_point_uid2 = line2['point2']['uid']
 
 		# args[0] ~ self | cls
-		solv_result = f(args[0], data['uid1'], data['uid1'], 
+		result = f(args[0], data['uid1'], data['uid1'], 
 			line1_point_uid1, line1_point_uid2, line2_point_uid1, line2_point_uid2)
+		solv_result = result['data']
+		restriction_name = result['restriction']
 
 		try:
 			store_line1 = {
 				'point1': {
 					'uid': line1_point_uid1,
-					'x': float(solv_result['x_'+line1_point_id1]), 
-					'y': float(solv_result['y_'+line1_point_id1])
+					'x': float(solv_result['x_'+line1_point_uid1]), 
+					'y': float(solv_result['y_'+line1_point_uid1])
 				},
 				'point2': {
 					'uid': line1_point_uid2,
-					'x': float(solv_result['x_'+line1_point_id2]), 
-					'y': float(solv_result['y_'+line1_point_id2])
+					'x': float(solv_result['x_'+line1_point_uid2]), 
+					'y': float(solv_result['y_'+line1_point_uid2])
 				}
 			}
 
@@ -112,21 +114,26 @@ def stored_two_lines(f):
 			store_line2 = {
 				'point1': {
 					'uid': line2_point_uid1,
-					'x': float(solv_result['x_'+line2_point_id1]), 
-					'y': float(solv_result['y_'+line2_point_id1])
+					'x': float(solv_result['x_'+line2_point_uid1]), 
+					'y': float(solv_result['y_'+line2_point_uid1])
 				},
 				'point2': {
 					'uid': line2_point_uid2,
-					'x': float(solv_result['x_'+line2_point_id2]), 
-					'y': float(solv_result['y_'+line2_point_id2])
+					'x': float(solv_result['x_'+line2_point_uid2]), 
+					'y': float(solv_result['y_'+line2_point_uid2])
 				}
 			}
 
 			json_store_line2 = json.dumps(store_line2)
 			Storage.redis_db.set(data['uid2'], json_store_line2)
 
+			return {
+				#'line_uid': data['uid'], 
+				#'restriction': restriction_name,
+			 	#'args': [point1_uid, point2_uid]
+			 }
+
 		except KeyError:
 				raise KeyError('Usage data: {"uid1":..., "uid2":...}')
-
 	return wrapper
 
