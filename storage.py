@@ -8,7 +8,7 @@ change to dict
 """
 
 class Storage:
-	redis_db = redis.StrictRedis(host="localhost", port=6379, db=0)
+	redis_db = redis.StrictRedis(host="localhost", port=6379, db=0, decode_responses=True)
 
 	@classmethod
 	def add(cls, obj):
@@ -33,6 +33,32 @@ class Storage:
 		data = cls.redis_db.get(uid)
 		data = data.decode('utf8').replace("'", '"')
 		return json.loads(data)
+
+
+	@classmethod
+	def set_restrictions(cls, d):
+		cls.redis_db.set("restrictions", json.dumps(d))
+
+	@classmethod
+	def get_restiction_for_object(cls, uid):
+		restictions = cls.redis_db.get("restictions")
+		if restictions is not None:
+			print("restictions NOT NONE")
+			restictions = json.loads(restictions)
+			if uid in restictions.keys():
+				print("if")
+				return restictions[uid]
+			print("ELSE")
+			return {}
+		print("REDIS NOEN")
+		return None
+
+	@classmethod
+	def get_all_restrictions(cls):
+		restictions = cls.redis_db.get("restictions")
+		if restictions is not None:
+			return json.loads(restictions)
+		return None
 
 	@classmethod
 	def export_all_data(cls):

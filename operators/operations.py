@@ -1,6 +1,8 @@
 from services.validators import ValidatorManager, PointValidator, LineValidator
-from operators.nx_math import ver, hor, perpTwoLines, parTwoLines, eqTwoPoint
+from services.extractor import stored_line
 from operators.nx_math import Xc
+#from operators.nx_math import ver, hor, perpTwoLines, parTwoLines, eqTwoPoint
+from operators import nx_math
 from storage import Storage
 from copy import copy
 import json
@@ -27,8 +29,6 @@ class CreateManager:
 			store_point = {'x': params['point']['x'], 'y': params['point']['y']}
 			json_store_point = json.dumps(store_point)
 			Storage.redis_db.set(params['uid'], json_store_point)
-
-			print(Xc)
 			return Xc
 		else:
 			raise ValueError('Usage point: {"uid":..., "point":{"x":..., "y":...}')
@@ -71,7 +71,6 @@ class CreateManager:
 
 			except KeyError:
 				raise KeyError('Usage line: {"uid":..., "point1":{"x", "y"}, "point2":{"x", "y"}')
-
 			return Xc
 		else:
 			raise ValueError('Usage line: {"uid":..., "point1":{"uid", "x", "y"}, "point2":{"uid", "x", "y"}')
@@ -79,65 +78,30 @@ class CreateManager:
 
 class RestrictionManager:
 	@classmethod
-	def vertical_strict(cls, data):
-		print(data)
-		line = Storage.redis_db.get(data['uid'])
-		line = json.loads(line)
-
-		id1 = line['point1']['uid']
-		id2 = line['point2']['uid']
-		solv_result = ver(id1, id2)
-
-		try:
-			store_line = {
-				'point1': {
-					'uid': line['point1']['uid'],
-					'x': float(solv_result['x_'+line['point1']['uid']]), 
-					'y': float(solv_result['y_'+line['point1']['uid']])
-				},
-				'point2': {
-					'uid': line['point2']['uid'],
-					'x': float(solv_result['x_'+line['point2']['uid']]), 
-					'y': float(solv_result['y_'+line['point2']['uid']])
-				}
-			}
-
-			json_store_line = json.dumps(store_line)
-			Storage.redis_db.set(data['uid'], json_store_line)
-
-		except KeyError:
-				raise KeyError('Usage data: {"uid":...}')
+	@stored_line
+	def vertical_strict(cls, line_uid, point1_uid, point2_uid):
+		solv_result = nx_math.ver(point1_uid, point2_uid)
+		restrictions = Storage.get_restiction_for_object(line_uid)
+		if restrictions is not None:
+			restrictions[line_uid].append({'name': nx_math.ver.__name__, 'args': [point1_uid, point2_uid]})
+		else:
+			restrictions = {line_uid: [{'name': nx_math.ver.__name__, 'args': [point1_uid, point2_uid]}]}
+		Storage.set_restrictions(restrictions)
+		return solv_result
 
 
 	@classmethod
-	def horizontal_strict(cls, data):
-		print(data)
-		line = Storage.redis_db.get(data['uid'])
-		line = json.loads(line)
+	@stored_line
+	def horizontal_strict(cls, line_uid, point1_uid, point2_uid):
+		solv_result = nx_math.hor(point1_uid, point2_uid)
+		restrictions = Storage.get_restiction_for_object(line_uid)
+		if restrictions is not None:
+			restrictions[line_uid].append({'name': nx_math.hor.__name__, 'args': [point1_uid, point2_uid]})
+		else:
+			restrictions = {line_uid: [{'name': nx_math.hor.__name__, 'args': [point1_uid, point2_uid]}]}
+		Storage.set_restrictions(restrictions)
+		return solv_result
 
-		id1 = line['point1']['uid']
-		id2 = line['point2']['uid']
-		solv_result = hor(id1, id2)
-
-		try:
-			store_line = {
-				'point1': {
-					'uid': line['point1']['uid'],
-					'x': float(solv_result['x_'+line['point1']['uid']]), 
-					'y': float(solv_result['y_'+line['point1']['uid']])
-				},
-				'point2': {
-					'uid': line['point2']['uid'],
-					'x': float(solv_result['x_'+line['point2']['uid']]), 
-					'y': float(solv_result['y_'+line['point2']['uid']])
-				}
-			}
-
-			json_store_line = json.dumps(store_line)
-			Storage.redis_db.set(data['uid'], json_store_line)
-
-		except KeyError:
-				raise KeyError('Usage data: {"uid":...}')
 
 	@classmethod
 	def lines_perpendicular(cls, data):
@@ -153,7 +117,7 @@ class RestrictionManager:
 		line2_id1 = line2['point1']['uid']
 		line2_id2 = line2['point2']['uid']
 
-		solv_result = perpTwoLines(line1_id1, line1_id2, line2_id1, line2_id2)
+		solv_result = nx_math.perpTwoLines(line1_id1, line1_id2, line2_id1, line2_id2)
 		print(solv_result)
 
 		try:
@@ -208,7 +172,7 @@ class RestrictionManager:
 		line2_id1 = line2['point1']['uid']
 		line2_id2 = line2['point2']['uid']
 
-		solv_result = parTwoLines(line1_id1, line1_id2, line2_id1, line2_id2)
+		solv_result = nx_math.parTwoLines(line1_id1, line1_id2, line2_id1, line2_id2)
 		print(solv_result)
 
 		try:
@@ -279,7 +243,7 @@ class RestrictionManager:
 		print(object2)
 		print(id1, id2)
 
-		solv_result = eqTwoPoint(id1, id2)
+		solv_result = nx_math.eqTwoPoint(id1, id2)
 		print(solv_result)
 
 		if object1['type'] == 'Point':
