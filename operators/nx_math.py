@@ -62,7 +62,7 @@ def distTwoPoint(l, id1, id2):
     
     print('',Eq, sep='\n')
     for var in m:
-        Eq[var] += diff(Equal, X[var])
+        Eq[var] += diff(Equal, X_old[var])
 
 # ...
 def eqTwoPoint(id1, id2):
@@ -112,16 +112,16 @@ def eqTwoPoint(id1, id2):
     
     print('',Eq, sep='\n')
     for var in m:
-        Eq[var] += diff(Equal1, X[var])
-        Eq[var] += diff(Equal2, X[var])
+        Eq[var] += diff(Equal1, X_old[var])
+        Eq[var] += diff(Equal2, X_old[var])
 
-    res = nsolve(list(Eq.values()), list(X.values()), [Xc[i] for i in X_old.keys()])
+    res = nsolve(list(Eq.values()), list(X_old.values()), [Xc[i] for i in X_old.keys()])
     print("########RESUUUULT#######")
     print(res)
     print(res.values())
     print([*X_old.values()])
     print(list(zip(res.values(), [*X_old.values()])))
-    print({item: res.values()[pos] for pos, item in enumerate([*X.values()]) if pos < len(res.values())})
+    print({item: res.values()[pos] for pos, item in enumerate([*X_old.values()]) if pos < len(res.values())})
     return {str(item): res.values()[pos] for pos, item in enumerate([*X_old.values()]) if pos < len(res.values())}
 
 # id1 point1.uid...
