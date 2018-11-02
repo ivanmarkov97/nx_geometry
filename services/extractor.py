@@ -91,9 +91,12 @@ def stored_two_lines(f):
 		line2_point_uid1 = line2['point1']['uid']
 		line2_point_uid2 = line2['point2']['uid']
 
+		if 'angle' in data.keys():
+			kwargs['angle'] = data['angle']
+
 		# args[0] ~ self | cls
 		result = f(args[0], data['uid1'], data['uid1'], 
-			line1_point_uid1, line1_point_uid2, line2_point_uid1, line2_point_uid2)
+			line1_point_uid1, line1_point_uid2, line2_point_uid1, line2_point_uid2, **kwargs)
 		solv_result = result['data']
 		restriction_name = result['restriction']
 
@@ -136,6 +139,5 @@ def stored_two_lines(f):
 			 }
 
 		except KeyError:
-				raise KeyError('Usage data: {"uid1":..., "uid2":...}')
+			raise KeyError('Usage data: {"uid1":..., "uid2":...}')
 	return wrapper
-

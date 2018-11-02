@@ -680,7 +680,8 @@ def angleTwoLines(angle, id1, id2, id3, id4):
             Xc[keys[i]] = x
             i+=1
     print(Xc)
-    return sol.x
+    return {key: Xc[key] for pos, key in enumerate(keys)}
+    #return sol.x
 
 # print(fixPoint('b'))
 # print(fixPoint('b'))

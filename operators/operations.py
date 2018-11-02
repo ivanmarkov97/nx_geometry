@@ -1,5 +1,7 @@
 from services.validators import ValidatorManager, PointValidator, LineValidator
-from services.extractor import stored_single_line, stored_two_lines, stored_line_restriction
+from services.extractor import (stored_single_line, 
+								stored_two_lines,
+								stored_line_restriction)
 from operators.nx_math import Xc
 #from operators.nx_math import ver, hor, perpTwoLines, parTwoLines, eqTwoPoint
 from operators import nx_math
@@ -237,3 +239,13 @@ class DragManager:
 	@classmethod
 	def drag_line(cls, data):
 		pass
+
+class ToolManager:
+	@classmethod
+	@stored_two_lines
+	def angle_between_lines(cls, line1_uid, line2_uid, *points, **kwargs): # points: point uids, kwargs: {'angle': 60}
+		print("ARGS", points, kwargs)
+		solv_result = nx_math.angleTwoLines(kwargs['angle'], *points)
+		print("SOLVE RESULT")
+		print(solv_result)
+		return {'data': solv_result, 'restriction': nx_math.angleTwoLines.__name__}

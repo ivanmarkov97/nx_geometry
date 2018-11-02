@@ -1,4 +1,4 @@
-from .operations import printer, CreateManager, RestrictionManager
+from .operations import printer, CreateManager, RestrictionManager, ToolManager
 from .nx_math import (distTwoPoint,
 					  eqTwoPoint,
 					  perpTwoLines,
@@ -22,7 +22,7 @@ mapped_operations = [
 	('connect_points', RestrictionManager.connect_points), 
 
 	('attach_point_to_line', RestrictionManager.attach_point_to_line),
-	('angle_between_lines', None),
+	('angle_between_lines', ToolManager.angle_between_lines),
 	
 	('dist_between_points', distTwoPoint),
 
