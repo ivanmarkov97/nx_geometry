@@ -17,8 +17,8 @@ class CreateManager:
 	def create_point(cls, params):
 		validator = PointValidator(params)
 		if ValidatorManager.is_valid(validator):
-			x_key = 'x_{}'.format(params['uid'])
-			y_key = 'y_{}'.format(params['uid'])
+			x_key = 'x{}'.format(params['uid'])
+			y_key = 'y{}'.format(params['uid'])
 
 			Xc[x_key] = params['point']['x']
 			Xc[y_key] = params['point']['y']
@@ -36,11 +36,11 @@ class CreateManager:
 		validator = LineValidator(params)
 		if ValidatorManager.is_valid(validator):
 			try:
-				x1_key = 'x_{}'.format(params['point1']['uid'])
-				y1_key = 'y_{}'.format(params['point1']['uid'])
+				x1_key = 'x{}'.format(params['point1']['uid'])
+				y1_key = 'y{}'.format(params['point1']['uid'])
 
-				x2_key = 'x_{}'.format(params['point2']['uid'])
-				y2_key = 'y_{}'.format(params['point2']['uid'])
+				x2_key = 'x{}'.format(params['point2']['uid'])
+				y2_key = 'y{}'.format(params['point2']['uid'])
 
 				Xc[x1_key] = params['point1']['x']
 				Xc[y1_key] = params['point1']['y']

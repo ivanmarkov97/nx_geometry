@@ -31,17 +31,20 @@ def stored_single_line(f):
 		solv_result = result['data']
 		restriction_name = result['restriction']
 
+		print("SOLV RESULT")
+		print(solv_result)
+
 		try:
 			store_line = {
 				'point1': {
 					'uid': line['point1']['uid'],
-					'x': float(solv_result['x_'+point1_uid]), 
-					'y': float(solv_result['y_'+point1_uid])
+					'x': float(solv_result['x'+point1_uid]), 
+					'y': float(solv_result['y'+point1_uid])
 				},
 				'point2': {
 					'uid': line['point2']['uid'],
-					'x': float(solv_result['x_'+point2_uid]), 
-					'y': float(solv_result['y_'+point2_uid])
+					'x': float(solv_result['x'+point2_uid]), 
+					'y': float(solv_result['y'+point2_uid])
 				}
 			}
 
@@ -98,32 +101,31 @@ def stored_two_lines(f):
 			store_line1 = {
 				'point1': {
 					'uid': line1_point_uid1,
-					'x': float(solv_result['x_'+line1_point_uid1]), 
-					'y': float(solv_result['y_'+line1_point_uid1])
+					'x': float(solv_result['x'+line1_point_uid1]), 
+					'y': float(solv_result['y'+line1_point_uid1])
 				},
 				'point2': {
 					'uid': line1_point_uid2,
-					'x': float(solv_result['x_'+line1_point_uid2]), 
-					'y': float(solv_result['y_'+line1_point_uid2])
+					'x': float(solv_result['x'+line1_point_uid2]), 
+					'y': float(solv_result['y'+line1_point_uid2])
+				}
+			}
+			store_line2 = {
+				'point1': {
+					'uid': line2_point_uid1,
+					'x': float(solv_result['x'+line2_point_uid1]), 
+					'y': float(solv_result['y'+line2_point_uid1])
+				},
+				'point2': {
+					'uid': line2_point_uid2,
+					'x': float(solv_result['x'+line2_point_uid2]), 
+					'y': float(solv_result['y'+line2_point_uid2])
 				}
 			}
 
 			json_store_line1 = json.dumps(store_line1)
 			Storage.redis_db.set(data['uid1'], json_store_line1)
-
-			store_line2 = {
-				'point1': {
-					'uid': line2_point_uid1,
-					'x': float(solv_result['x_'+line2_point_uid1]), 
-					'y': float(solv_result['y_'+line2_point_uid1])
-				},
-				'point2': {
-					'uid': line2_point_uid2,
-					'x': float(solv_result['x_'+line2_point_uid2]), 
-					'y': float(solv_result['y_'+line2_point_uid2])
-				}
-			}
-
+			
 			json_store_line2 = json.dumps(store_line2)
 			Storage.redis_db.set(data['uid2'], json_store_line2)
 
