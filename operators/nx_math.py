@@ -9,7 +9,7 @@ Eq = {}
 #dF = {}
 
 # all vars
-X = {}
+X_old = {}
 
 """
 надо:
@@ -24,7 +24,7 @@ uid = 0
 
 # l - lenght (float64), id1 (point.uid)
 def distTwoPoint(l, id1, id2):
-    n = len(X)
+    n = len(X_old)
     k = 0
     # Массив имен переменных для данного ограничения
     m = []
@@ -33,27 +33,27 @@ def distTwoPoint(l, id1, id2):
     for i in [id1, id2]:
         for j in ['x', 'y']:
             m.append(j+i)
-            if Symbol(j + i) in X.values():
+            if Symbol(j + i) in X_old.values():
                 continue
             s.append(j+i)
-            X[j+i] = (Symbol(j + i))
+            X_old[j+i] = (Symbol(j + i))
             k += 1
     global uid
     uid += 1
 
-    X['ld' + str(uid)] = Symbol('ld' + str(uid))
+    X_old['ld' + str(uid)] = Symbol('ld' + str(uid))
     Xc['ld' + str(uid)] = 0
     m.append('ld' + str(uid))
     s.append('ld' + str(uid))
     print('m = ',m)
     print('s = ',s)
     k += 1
-    Equal = X[m[4]]*((X[m[0]] - X[m[2]])**2 + (X[m[1]] - X[m[3]])**2 - l**2)
+    Equal = X_old[m[4]]*((X_old[m[0]] - X_old[m[2]])**2 + (X_old[m[1]] - X_old[m[3]])**2 - l**2)
     localdF0 = {
-        m[0] : X[m[0]] - Xc[m[0]],
-        m[2] : X[m[2]] - Xc[m[2]],
-        m[1] : X[m[1]] - Xc[m[1]],
-        m[3] : X[m[3]] - Xc[m[3]],
+        m[0] : X_old[m[0]] - Xc[m[0]],
+        m[2] : X_old[m[2]] - Xc[m[2]],
+        m[1] : X_old[m[1]] - Xc[m[1]],
+        m[3] : X_old[m[3]] - Xc[m[3]],
         m[4] : 0
     }
     print('\n',*localdF0.items(),sep='\n')
@@ -66,7 +66,7 @@ def distTwoPoint(l, id1, id2):
 
 # ...
 def eqTwoPoint(id1, id2):
-    n = len(X)
+    n = len(X_old)
     k = 0
     # Массив имен переменных для данного ограничения
     m = []
@@ -75,34 +75,34 @@ def eqTwoPoint(id1, id2):
     for i in [id1, id2]:
         for j in ['x', 'y']:
             m.append(j+i)
-            if Symbol(j + i) in X.values():
+            if Symbol(j + i) in X_old.values():
                 continue
             s.append(j+i)
-            X[j+i] = (Symbol(j + i))
+            X_old[j+i] = (Symbol(j + i))
             k += 1
     global uid
     uid += 1
 
-    X['ld' + str(uid)] = Symbol('ld' + str(uid))
+    X_old['ld' + str(uid)] = Symbol('ld' + str(uid))
     Xc['ld' + str(uid)] = 1
     m.append('ld' + str(uid))
     s.append('ld' + str(uid))
     uid += 1
 
-    X['ld' + str(uid)] = Symbol('ld' + str(uid))
+    X_old['ld' + str(uid)] = Symbol('ld' + str(uid))
     Xc['ld' + str(uid)] = 1
     m.append('ld' + str(uid))
     s.append('ld' + str(uid))
     print('m = ',m)
     print('s = ',s)
     k += 1
-    Equal1 = X[m[4]]*(X[m[0]] - X[m[2]])
-    Equal2 = X[m[5]]*(X[m[1]] - X[m[3]])
+    Equal1 = X_old[m[4]]*(X_old[m[0]] - X_old[m[2]])
+    Equal2 = X_old[m[5]]*(X_old[m[1]] - X_old[m[3]])
     localdF0 = {
-        m[0] : X[m[0]] - Xc[m[0]],
-        m[2] : X[m[2]] - Xc[m[2]],
-        m[1] : X[m[1]] - Xc[m[1]],
-        m[3] : X[m[3]] - Xc[m[3]],
+        m[0] : X_old[m[0]] - Xc[m[0]],
+        m[2] : X_old[m[2]] - Xc[m[2]],
+        m[1] : X_old[m[1]] - Xc[m[1]],
+        m[3] : X_old[m[3]] - Xc[m[3]],
         m[4] : 0,
         m[5] : 0
     }
@@ -115,18 +115,18 @@ def eqTwoPoint(id1, id2):
         Eq[var] += diff(Equal1, X[var])
         Eq[var] += diff(Equal2, X[var])
 
-    res = nsolve(list(Eq.values()), list(X.values()), [Xc[i] for i in X.keys()])
+    res = nsolve(list(Eq.values()), list(X.values()), [Xc[i] for i in X_old.keys()])
     print("########RESUUUULT#######")
     print(res)
     print(res.values())
-    print([*X.values()])
-    print(list(zip(res.values(), [*X.values()])))
+    print([*X_old.values()])
+    print(list(zip(res.values(), [*X_old.values()])))
     print({item: res.values()[pos] for pos, item in enumerate([*X.values()]) if pos < len(res.values())})
-    return {str(item): res.values()[pos] for pos, item in enumerate([*X.values()]) if pos < len(res.values())}
+    return {str(item): res.values()[pos] for pos, item in enumerate([*X_old.values()]) if pos < len(res.values())}
 
 # id1 point1.uid...
 def perpTwoLines(id1, id2, id3, id4):
-    n = len(X)
+    n = len(X_old)
     k = 0
     # Массив имен переменных для данного ограничения
     m = []
@@ -135,34 +135,34 @@ def perpTwoLines(id1, id2, id3, id4):
     for i in [id1, id2, id3, id4]:
         for j in ['x', 'y']:
             m.append(j+i)
-            if Symbol(j + i) in X.values():
+            if Symbol(j + i) in X_old.values():
                 continue
             s.append(j+i)
-            X[j+i] = (Symbol(j + i))
+            X_old[j+i] = (Symbol(j + i))
             k += 1
     global uid
 
     uid += 1
 
-    X['ld' + str(uid)] = Symbol('ld' + str(uid))
+    X_old['ld' + str(uid)] = Symbol('ld' + str(uid))
     Xc['ld' + str(uid)] = 0
     m.append('ld' + str(uid))
     s.append('ld' + str(uid))
     print('m = ',m)
     print('s = ',s)
-    print("X ", X)
+    print("X ", X_old)
 
     k += 1
-    Equal = X[m[8]]*((X[m[2]] - X[m[0]])*(X[m[6]] - X[m[4]]) + (X[m[3]] - X[m[1]])*(X[m[7]] - X[m[5]]))
+    Equal = X_old[m[8]]*((X_old[m[2]] - X_old[m[0]])*(X_old[m[6]] - X_old[m[4]]) + (X_old[m[3]] - X_old[m[1]])*(X_old[m[7]] - X_old[m[5]]))
     localdF0 = {
-        m[0] : X[m[0]] - Xc[m[0]],
-        m[2] : X[m[2]] - Xc[m[2]],
-        m[1] : X[m[1]] - Xc[m[1]],
-        m[3] : X[m[3]] - Xc[m[3]],
-        m[4] : X[m[4]] - Xc[m[4]],
-        m[5] : X[m[5]] - Xc[m[5]],
-        m[6] : X[m[6]] - Xc[m[6]],
-        m[7] : X[m[7]] - Xc[m[7]],
+        m[0] : X_old[m[0]] - Xc[m[0]],
+        m[2] : X_old[m[2]] - Xc[m[2]],
+        m[1] : X_old[m[1]] - Xc[m[1]],
+        m[3] : X_old[m[3]] - Xc[m[3]],
+        m[4] : X_old[m[4]] - Xc[m[4]],
+        m[5] : X_old[m[5]] - Xc[m[5]],
+        m[6] : X_old[m[6]] - Xc[m[6]],
+        m[7] : X_old[m[7]] - Xc[m[7]],
         m[8] : 0
     }
     print('\n',*localdF0.items(),sep='\n')
@@ -171,16 +171,16 @@ def perpTwoLines(id1, id2, id3, id4):
     
     print('',Eq, sep='\n')
     for var in m:
-        Eq[var] += diff(Equal, X[var])
+        Eq[var] += diff(Equal, X_old[var])
 
-    res = nsolve(list(Eq.values()), list(X.values()), [Xc[i] for i in X.keys()])
+    res = nsolve(list(Eq.values()), list(X_old.values()), [Xc[i] for i in X_old.keys()])
     print(res)
-    print({item: res.values()[pos] for pos, item in enumerate([*X.values()])})
-    return {str(item): res.values()[pos] for pos, item in enumerate([*X.values()])}
+    print({item: res.values()[pos] for pos, item in enumerate([*X_old.values()])})
+    return {str(item): res.values()[pos] for pos, item in enumerate([*X_old.values()])}
 
 # ....
 def parTwoLines(id1, id2, id3, id4):
-    n = len(X)
+    n = len(X_old)
     k = 0
     # Массив имен переменных для данного ограничения
     m = []
@@ -189,16 +189,16 @@ def parTwoLines(id1, id2, id3, id4):
     for i in [id1, id2, id3, id4]:
         for j in ['x', 'y']:
             m.append(j+i)
-            if Symbol(j+i) in X.values():
+            if Symbol(j+i) in X_old.values():
                 continue
             s.append(j+i)
-            X[j+i] = (Symbol(j + i))
+            X_old[j+i] = (Symbol(j + i))
             k += 1
     global uid
 
     uid += 1
 
-    X['ld' + str(uid)] = Symbol('ld' + str(uid))
+    X_old['ld' + str(uid)] = Symbol('ld' + str(uid))
     Xc['ld' + str(uid)] = 0
     m.append('ld' + str(uid))
     s.append('ld' + str(uid))
@@ -206,20 +206,20 @@ def parTwoLines(id1, id2, id3, id4):
     print('s = ',s)
 
     k += 1
-    l1 = ((X[m[2]] - X[m[0]])**2 + (X[m[3]] - X[m[1]])**2)**0.5
-    l2 = ((X[m[6]] - X[m[4]])**2 + (X[m[7]] - X[m[5]])**2)**0.5
-    Equal = X[m[8]]*((X[m[2]]-X[m[0]])*(X[m[7]] - X[m[5]]) -\
-     (X[m[6]] - X[m[4]])*(X[m[3]] - X[m[1]]))
+    l1 = ((X_old[m[2]] - X_old[m[0]])**2 + (X_old[m[3]] - X_old[m[1]])**2)**0.5
+    l2 = ((X_old[m[6]] - X_old[m[4]])**2 + (X_old[m[7]] - X_old[m[5]])**2)**0.5
+    Equal = X_old[m[8]]*((X_old[m[2]]-X_old[m[0]])*(X_old[m[7]] - X_old[m[5]]) -\
+     (X_old[m[6]] - X_old[m[4]])*(X_old[m[3]] - X_old[m[1]]))
      #X[m[8]]*(((X[m[2]] - X[m[0]])*(X[m[6]] - X[m[4]]) + (X[m[3]] - X[m[1]])*(X[m[7]] - X[m[5]])) / l1 / l2 - 1) 
     localdF0 = {
-        m[0] : X[m[0]] - Xc[m[0]],
-        m[2] : X[m[2]] - Xc[m[2]],
-        m[1] : X[m[1]] - Xc[m[1]],
-        m[3] : X[m[3]] - Xc[m[3]],
-        m[4] : X[m[4]] - Xc[m[4]],
-        m[5] : X[m[5]] - Xc[m[5]],
-        m[6] : X[m[6]] - Xc[m[6]],
-        m[7] : X[m[7]] - Xc[m[7]],
+        m[0] : X_old[m[0]] - Xc[m[0]],
+        m[2] : X_old[m[2]] - Xc[m[2]],
+        m[1] : X_old[m[1]] - Xc[m[1]],
+        m[3] : X_old[m[3]] - Xc[m[3]],
+        m[4] : X_old[m[4]] - Xc[m[4]],
+        m[5] : X_old[m[5]] - Xc[m[5]],
+        m[6] : X_old[m[6]] - Xc[m[6]],
+        m[7] : X_old[m[7]] - Xc[m[7]],
         m[8] : 0
     }
     print('\n',*localdF0.items(),sep='\n')
@@ -228,12 +228,12 @@ def parTwoLines(id1, id2, id3, id4):
     
     print('',Eq, sep='\n')
     for var in m:
-        Eq[var] += diff(Equal, X[var])
+        Eq[var] += diff(Equal, X_old[var])
 
-    res = nsolve(list(Eq.values()), list(X.values()), [Xc[i] for i in X.keys()])
+    res = nsolve(list(Eq.values()), list(X_old.values()), [Xc[i] for i in X_old.keys()])
     print(res)
-    print({item: res.values()[pos] for pos, item in enumerate([*X.values()])})
-    return {str(item): res.values()[pos] for pos, item in enumerate([*X.values()])}
+    print({item: res.values()[pos] for pos, item in enumerate([*X_old.values()])})
+    return {str(item): res.values()[pos] for pos, item in enumerate([*X_old.values()])}
 
 
 
