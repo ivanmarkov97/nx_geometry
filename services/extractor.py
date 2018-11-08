@@ -141,3 +141,142 @@ def stored_two_lines(f):
 		except KeyError:
 			raise KeyError('Usage data: {"uid1":..., "uid2":...}')
 	return wrapper
+
+
+def stored_distance(f):
+	# for class usage (self | cls)
+	@wraps(f)
+	def wrapper(*args, **kwargs):
+		data = args[1]
+		print("######DATA####")
+		print(args, kwargs)
+
+		object1 = None
+		object2 = None
+
+		if data['point1']['parent'] is not None:
+			#print("THIS IS POINT {} FROM LINE {}".format(data['point1']['pointNum'], data['point1']['parent']))
+			object1 = Storage.redis_db.get(data['point1']['parent'])
+			object1 = json.loads(object1)
+			point_key = 'point{}'.format(data['point1']['pointNum']) 
+			id1 = object1[point_key]['uid']
+			object1['type'] = 'Line'
+		elif data['point1']['uid'] in Storage.redis_db.keys():
+			#print("THIS IS POINT")
+			object1 = Storage.redis_db.get(data['point1']['uid'])
+			object1 = json.loads(object1)
+			id1 = data['point1']['uid']
+			object1['type'] = 'Point'
+		else:
+			print("OBJECT DOESNT EXIST")
+
+		if data['point2']['parent'] is not None:
+			#print("THIS IS POINT {} FROM LINE {}".format(data['point1']['pointNum'], data['point1']['parent']))
+			object2 = Storage.redis_db.get(data['point2']['parent'])
+			object2 = json.loads(object2)
+			point_key = 'point{}'.format(data['point2']['pointNum']) 
+			id2 = object2[point_key]['uid']
+			object2['type'] = 'Line'
+		elif data['point1']['uid'] in Storage.redis_db.keys():
+			#print("THIS IS POINT")
+			object2 = Storage.redis_db.get(data['point2']['uid'])
+			object2 = json.loads(object2)
+			id2 = data['point2']['uid']
+			object2['type'] = 'Point'
+		else:
+			print("OBJECT DOESNT EXIST")
+
+		print(object1)
+		print(object2)
+		print(id1, id2)
+
+		if 'distance' in data:	
+			result = f(data['distance'], id1, id2)
+		else:
+			result = f(0.0, id1, id2)
+		print("SOLVE RESULT")
+		print(result)
+
+		solv_result = result['data']
+		
+		if object1['type'] == 'Point':
+			store_point = {
+				'x': float(solv_result['x'+data['point1']['uid']]), 
+				'y': float(solv_result['y'+data['point1']['uid']])
+			}
+			json_store_point = json.dumps(store_point)
+			Storage.redis_db.set(data['point1']['uid'], json_store_point)
+			del object1['type']
+		elif object1['type'] == 'Line':
+			if int(data['point1']['pointNum']) == 1:
+				store_line = {
+					'point1': {
+						'uid': object1['point1']['uid'],
+						'x': float(solv_result['x'+object1['point1']['uid']]), 
+						'y': float(solv_result['y'+object1['point1']['uid']])
+					},
+					'point2': {
+						'uid': object1['point2']['uid'],
+						'x': object1['point2']['x'], 
+						'y': object1['point2']['y']
+					}
+				}
+			elif int(data['point1']['pointNum']) == 2:
+				store_line = {
+					'point1': {
+						'uid': object1['point1']['uid'],
+						'x': object1['point1']['x'],
+						'y': object1['point1']['y']
+					},
+					'point2': {
+						'uid': object1['point2']['uid'],
+						'x': float(solv_result['x'+object1['point2']['uid']]),
+						'y': float(solv_result['y'+object1['point2']['uid']])
+					}
+				}
+
+			del object1['type']
+			json_store_line = json.dumps(store_line)
+			Storage.redis_db.set(data['point1']['parent'], json_store_line)
+
+		if object2['type'] == 'Point':
+			store_point = {
+				'x': float(solv_result['x'+data['point2']['uid']]), 
+				'y': float(solv_result['y'+data['point2']['uid']])
+			}
+			json_store_point = json.dumps(store_point)
+			Storage.redis_db.set(data['point2']['uid'], json_store_point)
+			del object2['type']
+		elif object2['type'] == 'Line':
+			if int(data['point2']['pointNum']) == 1:
+				store_line = {
+					'point1': {
+						'uid': object2['point1']['uid'],
+						'x': float(solv_result['x'+object2['point1']['uid']]), 
+						'y': float(solv_result['y'+object2['point1']['uid']])
+					},
+					'point2': {
+						'uid': object2['point2']['uid'],
+						'x': object2['point2']['x'], 
+						'y': object2['point2']['y']
+					}
+				}
+			elif int(data['point2']['pointNum']) == 2:
+				store_line = {
+					'point1': {
+						'uid': object2['point1']['uid'],
+						'x': object2['point1']['x'],
+						'y': object2['point1']['y']
+					},
+					'point2': {
+						'uid': object2['point2']['uid'],
+						'x': float(solv_result['x'+object2['point2']['uid']]),
+						'y': float(solv_result['y'+object2['point2']['uid']])
+					}
+				}
+
+			del object2['type']
+			json_store_line = json.dumps(store_line)
+			Storage.redis_db.set(data['point2']['parent'], json_store_line)
+	return wrapper
+
