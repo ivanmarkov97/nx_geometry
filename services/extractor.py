@@ -168,7 +168,7 @@ def stored_distance(f):
 			id1 = data['point1']['uid']
 			object1['type'] = 'Point'
 		else:
-			print("OBJECT DOESNT EXIST")
+			raise ValueError("OBJECT DOESNT EXIST")
 
 		if data['point2']['parent'] is not None:
 			#print("THIS IS POINT {} FROM LINE {}".format(data['point1']['pointNum'], data['point1']['parent']))
@@ -184,16 +184,17 @@ def stored_distance(f):
 			id2 = data['point2']['uid']
 			object2['type'] = 'Point'
 		else:
-			print("OBJECT DOESNT EXIST")
+			raise ValueError("OBJECT DOESNT EXIST")
 
-		print(object1)
-		print(object2)
+		print('pbject1 ', object1)
+		print('object2 ', object2)
+		print('data ', data)
 		print(id1, id2)
 
 		if 'distance' in data:	
-			result = f(data['distance'], id1, id2)
+			result = f(args[0], data['distance'], id1, id2)
 		else:
-			result = f(0.0, id1, id2)
+			result = f(args[0], id1, id2)
 		print("SOLVE RESULT")
 		print(result)
 

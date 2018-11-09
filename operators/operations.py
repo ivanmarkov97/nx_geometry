@@ -106,12 +106,12 @@ class RestrictionManager:
 
 	@classmethod
 	@stored_distance
-	def connect_points(cls, distance, *ids):
+	def connect_points(cls, *ids):
 		print("CONNECT POINTS")
-		solv_result = nx_math.distTwoPoint(0, *ids)
+		solv_result = nx_math.eqTwoPoint(*ids)
 		print("SOLVE RESULT")
 		print(solv_result)
-		return {'data': solv_result, 'restriction': nx_math.distTwoPoint.__name__}
+		return {'data': solv_result, 'restriction': nx_math.eqTwoPoint.__name__}
 
 
 	@classmethod

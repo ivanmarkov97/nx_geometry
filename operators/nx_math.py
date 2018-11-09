@@ -102,7 +102,7 @@ def hor(id1, id2):
         for x in sol.x:
             Xc[keys[i]] = x
             i+=1
-        return {key: Xc[key] for pos, key in enumerate(keys[:4])}
+        return {key: Xc[key] for pos, key in enumerate(keys)}
     print(Xc)
 
 
@@ -225,7 +225,7 @@ def fixPoint(id1):
         for x in sol.x:
             Xc[keys[i]] = x
             i+=1
-        return {key: Xc[key] for pos, key in enumerate(keys[:2])}
+        return {key: Xc[key] for pos, key in enumerate(keys)}
     print(Xc)
 
 
@@ -293,7 +293,7 @@ def eqTwoPoint(id1,id2):
         for x in sol.x:
             Xc[keys[i]] = x
             i+=1
-        return {key: Xc[key] for pos, key in enumerate(keys[:4])}
+        return {key: Xc[key] for pos, key in enumerate(keys)}
     print(Xc)
     return sol.x
 
@@ -364,7 +364,7 @@ def distTwoPoint(l, id1, id2):
         for x in sol.x:
             Xc[keys[i]] = x
             i+=1
-        return {key: Xc[key] for pos, key in enumerate(keys[:4])}
+        return {key: Xc[key] for pos, key in enumerate(keys)}
     print(Xc)
 
 
@@ -472,7 +472,7 @@ def angleTwoLines(angle, id1, id2, id3, id4):
         for x in sol.x:
             Xc[keys[i]] = x
             i+=1
-        return {key: Xc[key] for pos, key in enumerate(keys[:8])}
+        return {key: Xc[key] for pos, key in enumerate(keys)}
     print(Xc)
     #return sol.x
 
