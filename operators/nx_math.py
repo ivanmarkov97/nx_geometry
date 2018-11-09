@@ -376,7 +376,7 @@ def angleTwoLines(angle, id1, id2, id3, id4):
     for i in [id1, id2, id3, id4]:
         for j in ['x', 'y']:
             m.append(j+i)
-            if j+i in Xt.keys():
+            if j+i in Eq.keys():
                 continue
             s.append(j+i)
     lcur = 'ld'+str(uid)
