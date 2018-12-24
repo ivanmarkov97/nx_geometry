@@ -173,7 +173,7 @@ def ver(id1, id2):
         for x in sol.x:
             Xc[keys[i]] = x
             i+=1
-        return {key: Xc[key] for pos, key in enumerate(keys[:4])}
+        return {key: Xc[key] for pos, key in enumerate(keys)}
     print("XXXXXXXXXXCCCCCCCCCCCCCCCCC")
     print(Xc)
 
@@ -295,7 +295,7 @@ def eqTwoPoint(id1,id2):
             i+=1
         return {key: Xc[key] for pos, key in enumerate(keys)}
     print(Xc)
-    return sol.x
+    #return sol.x
 
 
 def distTwoPoint(l, id1, id2):
@@ -476,6 +476,38 @@ def angleTwoLines(angle, id1, id2, id3, id4):
     print(Xc)
     #return sol.x
 
+
+def solve_all(pos_new):
+    print(Xc)
+
+    for point_id in pos_new:
+        x_key = 'x{}'.format(point_id)
+        y_key = 'y{}'.format(point_id)
+
+        Xc[x_key] = pos_new[point_id]['x']
+        Xc[y_key] = pos_new[point_id]['y']
+
+    def f(vars):
+        return [i(vars) for i in Eq.values()]
+
+    print(Xc)
+    keys = [k for k in k.keys()]
+    if Eq.keys():
+        sol = root(f,[Xc[i] for i in Eq.keys()])
+        print(sol.x)
+        if sol.success:
+           print(keys)
+           i = 0
+           for x in sol.x:
+               Xc[keys[i]] = x
+               i+=1
+        else:
+            print('##########NOOOOOOOONE')
+    return {key: Xc[key] for key in Xc.keys() if not key.startswith('ld')}
+    #return {key: Xc[key] for pos, key in enumerate(keys)}
+
+
+
 # print(fixPoint('b'))
 # print(fixPoint('b'))
 # print(eqTwoPoint('a','b'))
@@ -487,8 +519,8 @@ def angleTwoLines(angle, id1, id2, id3, id4):
 # angleTwoLines(90,'a','b','c','d')
 #print(distTwoPoint(2,'a','b'))
 # print(hor('a','b'))
-def f(vars):
-        return [i(vars) for i in Eq.values()]
+#def f(vars):
+#    return [i(vars) for i in Eq.values()]
 #delta = 0.05
 #Xc['xa']+=delta
 #print(Xc)

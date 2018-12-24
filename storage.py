@@ -52,6 +52,10 @@ class Storage:
 		return None
 
 	@classmethod
+	def export_all_data_native(cls):
+		return [{key: cls.redis_db.get(key)} for key in cls.redis_db.keys() if key != "restrictions"]
+
+	@classmethod
 	def export_all_data(cls):
 		data_str = str([{key: cls.redis_db.get(key)} for key in cls.redis_db.keys() if key != "restrictions"])
 		data_str = data_str.replace("b'", '"').replace("'", '"')

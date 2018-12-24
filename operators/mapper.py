@@ -1,11 +1,19 @@
-from .operations import printer, CreateManager, RestrictionManager, ToolManager
+from .operations import printer, CreateManager, RestrictionManager, ToolManager, DragManager
+
+def d_point(*args, **kwars):
+	print('Drag point')
+
+
+def d_line(*args, **kwars):
+	print('Drag line')
+
 
 mapped_operations = [
 	('create_point', CreateManager.create_point),
 	('create_line', CreateManager.create_line),
 
-	('drag_point', None),
-	('drag_line', None),
+	('drag_point', d_point),
+	('drag_line', DragManager.drag_line),
 
 	('horizontal', RestrictionManager.horizontal_strict),
 	('vertical', RestrictionManager.vertical_strict),

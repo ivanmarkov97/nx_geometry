@@ -1,5 +1,6 @@
-from services.extractor import data_parser
-from operators.mapper import mapped_operations
+from lab2.nx_geometry.services.extractor import data_parser
+from lab2.nx_geometry.operators.mapper import mapped_operations
+
 
 @data_parser
 def handle_data(data, operation):

@@ -2,6 +2,7 @@ from services.validators import ValidatorManager, PointValidator, LineValidator
 from services.extractor import (stored_single_line, 
 								stored_two_lines,
 								stored_distance,
+								stored_drag_line,
 								stored_line_restriction)
 from operators.nx_math import Xc
 from operators import nx_math
@@ -143,3 +144,17 @@ class ToolManager:
 		print("SOLVE RESULT")
 		print(solv_result)
 		return {'data': solv_result, 'restriction': nx_math.distTwoPoint.__name__}
+
+
+class DragManager:
+	@classmethod
+	def drag_point(cls, id):
+		pass
+
+	@classmethod
+	@stored_drag_line
+	def drag_line(cls, pos_new):
+		print('drag line')
+		solv_result = nx_math.solve_all(pos_new)
+		print('solve result', solv_result)
+		return {'data': solv_result, 'restriction': nx_math.solve_all.__name__}

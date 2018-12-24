@@ -2,6 +2,42 @@ from storage import Storage
 from functools import wraps
 import json
 
+
+def find_new_values_for_point(point_uid, solv_result):
+	point_x_value = None; point_y_value = None
+
+	for xy_point_uid in solv_result:
+		if xy_point_uid[1:] == point_uid:
+			if xy_point_uid.startswith('x'):
+				point_x_value = solv_result[xy_point_uid]
+			elif xy_point_uid.startswith('y'):
+				point_y_value = solv_result[xy_point_uid]
+
+	return point_x_value, point_y_value
+
+
+def find_new_values_for_line_points(point1_uid, point2_uid, solv_result):
+	point1_x_value = None; point1_y_value = None
+	point2_x_value = None; point2_y_value = None
+
+	for xy_point_uid in solv_result:
+		if xy_point_uid[1:] == point1_uid:
+			if xy_point_uid.startswith('x'):
+				point1_x_value = solv_result[xy_point_uid]
+			elif xy_point_uid.startswith('y'):
+				point1_y_value = solv_result[xy_point_uid]
+
+	for xy_point_uid in solv_result:
+		if xy_point_uid[1:] == point2_uid:
+			if xy_point_uid.startswith('x'):
+				point2_x_value = solv_result[xy_point_uid]
+			elif xy_point_uid.startswith('y'):
+				point2_y_value = solv_result[xy_point_uid]
+
+	return point1_x_value, point1_y_value, point2_x_value, point2_y_value
+
+
+
 def data_parser(f):
 	@wraps(f)
 	def wrapper(*args, **kwargs):
@@ -75,6 +111,75 @@ def stored_line_restriction(f):
 	return wrapper
 
 
+def stored_drag_line(f):
+	@wraps(f)
+	def wrapper(*args, **kwargs):
+		print('drag')
+		data = args[1]
+
+		line = Storage.redis_db.get(data['uid'])
+		line = json.loads(line)
+		print("LINE :", line)
+
+		pos_new = {
+			data['point1']['uid']: data['point1'],
+			data['point2']['uid']: data['point2']
+		}
+
+		solv_result = f(args[0], pos_new, **kwargs)['data']
+
+		print('solv_result')
+		print(solv_result)
+
+		all_storage = Storage.export_all_data_native()
+
+		for storage_object in all_storage:
+			storage_object_key = list(storage_object.keys())[0]
+			storage_object[storage_object_key] = json.loads(storage_object[storage_object_key])
+			if 'point1' in storage_object[storage_object_key]:
+				"""
+				this is line
+				"""
+				point1_uid = storage_object[storage_object_key]['point1']['uid']
+				point2_uid = storage_object[storage_object_key]['point2']['uid']
+
+				point1_x_value, point1_y_value,\
+				point2_x_value, point2_y_value = find_new_values_for_line_points(point1_uid, point2_uid, solv_result)
+
+				store_line = {
+					'point1': {
+						'uid': point1_uid,
+						'x': point1_x_value,
+						'y': point1_y_value
+					},
+					'point2': {
+						'uid': point2_uid,
+						'x': point2_x_value,
+						'y': point2_y_value
+					}
+				}
+				json_store_line = json.dumps(store_line)
+				Storage.redis_db.set(storage_object_key, json_store_line)
+			elif 'x' in storage_object[storage_object_key]:
+				"""
+				this is point
+				"""
+				point_x_value, point_y_value = find_new_values_for_point(storage_object_key, solv_result)
+
+				store_point = {
+					'x': point_x_value,
+					'y': point_y_value
+				}
+				json_store_point = json.dumps(store_point)
+				Storage.redis_db.set(storage_object_key, json_store_point)
+		return {}
+
+	return wrapper
+
+
+
+
+
 def stored_two_lines(f):
 	# for class usage (self | cls)
 	@wraps(f)
@@ -85,6 +190,9 @@ def stored_two_lines(f):
 
 		line2 = Storage.redis_db.get(data['uid2'])
 		line2 = json.loads(line2)
+
+		print("LINE 1:", line1)
+		print("LINE 2:", line2)
 
 		line1_point_uid1 = line1['point1']['uid']
 		line1_point_uid2 = line1['point2']['uid']
@@ -98,6 +206,9 @@ def stored_two_lines(f):
 		result = f(args[0], data['uid1'], data['uid1'], 
 			line1_point_uid1, line1_point_uid2, line2_point_uid1, line2_point_uid2, **kwargs)
 		solv_result = result['data']
+
+		print("SOLVE RESULT", solv_result)
+
 		restriction_name = result['restriction']
 
 		try:
@@ -148,11 +259,13 @@ def stored_distance(f):
 	@wraps(f)
 	def wrapper(*args, **kwargs):
 		data = args[1]
-		print("######DATA####")
+		print("######DATA##### distance")
 		print(args, kwargs)
 
 		object1 = None
 		object2 = None
+
+		print("DATA: ", data)
 
 		if data['point1']['parent'] is not None:
 			#print("THIS IS POINT {} FROM LINE {}".format(data['point1']['pointNum'], data['point1']['parent']))

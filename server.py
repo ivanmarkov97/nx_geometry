@@ -1,5 +1,5 @@
-from operators.handler import handle_data
-from storage import Storage
+from lab2.nx_geometry.operators.handler import handle_data
+from lab2.nx_geometry.storage import Storage
 import websockets
 import asyncio
 
